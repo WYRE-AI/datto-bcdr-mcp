@@ -42,12 +42,14 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
 
+# 0.0.0.0 is safe here only because startup refuses to listen without a real
+# CONDUIT_S2S_SECRET (empty values and known placeholders exit non-zero).
+# AUTH_MODE=gateway never falls back to image env credentials.
 ENV NODE_ENV=production
 ENV MCP_TRANSPORT=http
 ENV MCP_HTTP_PORT=8080
 ENV MCP_HTTP_HOST=0.0.0.0
-# Default to env mode for backward compatibility; set to 'gateway' for hosted deployment
-ENV AUTH_MODE=env
+ENV AUTH_MODE=gateway
 
 CMD ["node", "dist/index.js"]
 
